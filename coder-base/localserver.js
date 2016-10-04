@@ -23,7 +23,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var io = require('socket.io');
 var net = require('http');
 var http = require('http');
 var https = require('https');
@@ -136,7 +135,9 @@ var apphandler = function( req, res, appdir ) {
 
 
 var startLocal = function() {
-    http.createServer(localapp).listen( config.httpListenPort, '127.0.0.1' );
+    var app = http.createServer(localapp);
+    var io = require('socket.io')(app);
+    app.listen( config.httpListenPort, config.listenIP );
 };
 
 var getHost = function( req ) {
