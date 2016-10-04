@@ -1,5 +1,5 @@
 
-exports.listenIP = null; //Defaults to *
+exports.listenIP = '0.0.0.0'; //Defaults to *
 exports.listenPort = '8081'; //the SSL port things run on
 exports.httpListenPort = '8080'; //this will all be redirected to SSL
 exports.cacheApps = true;
