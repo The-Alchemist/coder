@@ -20,6 +20,9 @@
 
 
 var express = require('express');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var socketio = require('socket.io');
 var net = require('http');
 var http = require('http');
@@ -103,9 +106,9 @@ var apphandler = function( req, res, appdir ) {
     applyAppSettings( userapp, appname, auth );
 
     var routes = [];
-    if ( req.route.method === 'get' ) {
+    if ( req.method === 'GET' ) {
         routes = userapp.get_routes;
-    } else if ( req.route.method === 'post' ) {
+    } else if ( req.method === 'POST' ) {
         routes = userapp.post_routes;
     }
         
@@ -153,7 +156,7 @@ var startSSL = function() {
         privateKey = fs.readFileSync(privateKeyFile).toString();
         certificate = fs.readFileSync(certificateFile).toString();
     } catch ( e ) {
-        util.print( "no certificate found. generating self signed cert.\n" );
+        console.log( "no certificate found. generating self signed cert.\n" );
     }
     
     if ( privateKey !== "" && certificate !== "" ) {
@@ -173,8 +176,8 @@ var startSSL = function() {
                 '-subj',
                 '/C=' + config.country + '/ST=' + config.state + "/L=" + config.locale + "/CN=" + config.commonName + "/subjectAltName=" + config.subjectAltName
             ]);
-            genkey.stdout.on('data', function(d) { util.print(d) } );
-            genkey.stderr.on('data', function(d) { util.print(d) } );
+            genkey.stdout.on('data', function(d) { console.log(d) } );
+            genkey.stderr.on('data', function(d) { console.log(d) } );
             genkey.addListener( 'exit', function( code, signal ) {
                 fs.chmodSync(privateKeyFile, '600');
                 loadServer();
@@ -196,7 +199,6 @@ var io;
 var socketMap={};
 var initSocketIO = function( server ) {
     io = socketio.listen( server );
-    io.set('log level', 1); //TODO: hack to fix recursion problem since we are piping log info to a socket
 
     // sync session data with socket
     // via https://github.com/DanielBaulig/sioe-demo/blob/master/app.js
@@ -297,7 +299,6 @@ var origlog = console.log;
 console.log = function(d) {
     origlog.call( console, d );
     if ( io ) {
-        io.set('log level', 1);
         var clients = io.sockets.clients();
         for ( var x=0; x<clients.length; x++ ) {
             var c = clients[x];
@@ -375,13 +376,13 @@ var getHost = function( req ) {
 var sslapp = express();
 var storesecret = crypto.randomBytes(16).toString('utf-8');
 params.extend( sslapp );
-sslapp.sessionStore = new express.session.MemoryStore();
+sslapp.sessionStore = new session.MemoryStore();
 sslapp.engine( 'html', cons.mustache );
 sslapp.set( 'view engine', 'html' );
 sslapp.set( 'views', __dirname + '/views' );
-sslapp.use( express.bodyParser() );
-sslapp.use( express.cookieParser() );
-sslapp.use( express.session({ 
+sslapp.use( bodyParser() );
+sslapp.use( cookieParser() );
+sslapp.use( session({
     secret: storesecret,
     key: 'connect.sid',
     store: sslapp.sessionStore
@@ -391,9 +392,9 @@ sslapp.get( '/', function( req, res ) {
     util.log( 'GET: /' );
     res.redirect( '/app/auth' );
 });
-sslapp.all( /^\/app\/(\w+)\/(.*)$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
-sslapp.all( /^\/app\/(\w+)\/$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
-sslapp.all( /^\/app\/(\w+)$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
+sslapp.all( /^\/app\/(\w+)\/(.*)$/, function( req, res, next ) { apphandler( req, res,  __dirname + '/apps/'); } );
+sslapp.all( /^\/app\/(\w+)\/$/, function( req, res, next) { apphandler( req, res,  __dirname + '/apps/'); } );
+sslapp.all( /^\/app\/(\w+)$/, function( req, res, next ) { apphandler( req, res,  __dirname + '/apps/'); } );
 
 
 
