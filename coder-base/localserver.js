@@ -20,6 +20,9 @@
 
 
 var express = require('express');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var io = require('socket.io');
 var net = require('http');
 var http = require('http');
@@ -96,9 +99,9 @@ var apphandler = function( req, res, appdir ) {
     }
 
     var routes = [];
-    if ( req.route.method === 'get' ) {
+    if ( req.method === 'GET') {
         routes = userapp.get_routes;
-    } else if ( req.route.method === 'post' ) {
+    } else if ( req.method === 'POST' ) {
         routes = userapp.post_routes;
     }
         
@@ -153,20 +156,20 @@ params.extend( localapp );
 localapp.engine( 'html', cons.mustache );
 localapp.set( 'view engine', 'html' );
 localapp.set( 'views', __dirname + '/views' );
-localapp.use( express.bodyParser() );
-localapp.use( express.cookieParser() );
-localapp.use( express.session({ 
+localapp.use( bodyParser() );
+localapp.use( cookieParser() );
+localapp.use( session({ 
     secret: crypto.randomBytes(16).toString('utf-8'),
-    store: new express.session.MemoryStore()
+    store: new session.MemoryStore()
 }));
-localapp.use( '/static', express.static( __dirname + '/static' ) );
 localapp.get( '/', function( req, res ) {
     util.log( 'GET: /' );
     res.redirect( '/app/auth' );
 });
-localapp.all( /^\/app\/(\w+)\/(.*)$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
-localapp.all( /^\/app\/(\w+)\/$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
-localapp.all( /^\/app\/(\w+)$/, function( req, res ) { apphandler( req, res,  __dirname + '/apps/'); } );
+localapp.use( '/static', express.static( __dirname + '/static' ) );
+localapp.all( /^\/app\/(\w+)\/(.*)$/, function( req, res, next ) { apphandler( req, res,  __dirname + '/apps/');  } );
+localapp.all( /^\/app\/(\w+)\/$/, function( req, res, next ) { apphandler( req, res,  __dirname + '/apps/');} );
+localapp.all( /^\/app\/(\w+)$/, function( req, res, next ) { apphandler( req, res,  __dirname + '/apps/');  } );
 
 
 startLocal();
