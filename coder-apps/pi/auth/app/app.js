@@ -21,7 +21,7 @@
 var mustache = require('mustache');
 var util = require('util');
 var fs = require('fs');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 //stores cache of password hash and device name
 var device_settings = {
