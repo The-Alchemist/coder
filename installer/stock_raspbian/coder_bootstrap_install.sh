@@ -7,7 +7,7 @@ echo ""
 echo "### Fetch the latest coder tree and install in /home/coder/coder-dist"
 su -s/bin/bash coder <<'EOF'
 cd /home/coder
-git clone https://github.com/googlecreativelab/coder.git coder-dist
+git clone https://github.com/The-Alchemist/coder.git coder-dist
 EOF
 echo ""
 

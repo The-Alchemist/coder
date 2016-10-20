@@ -22,16 +22,8 @@ cp -v ../../../raspbian-addons/etc/redis/redis.conf /etc/redis/redis.conf
 echo ""
 
 echo "### Install nodejs and npm."
-# The node packages are really old...
-# Ideally, we'd do: apt-get -y install nodejs npm
-# For now, we'll install manually from nodejs.org to /opt/node/
-mkdir tmp
-wget http://nodejs.org/dist/v0.10.7/node-v0.10.7-linux-arm-pi.tar.gz -P tmp/
-tar -zxv -C tmp/ -f tmp/node-v0.10.7-linux-arm-pi.tar.gz
-cp -rv tmp/node-v0.10.7-linux-arm-pi /opt/node
-ln -s /opt/node/bin/node /usr/bin/node
-ln -s /opt/node/bin/npm /usr/bin/npm
-rm -rf tmp
+apt-get -y install nodejs npm
+
 echo ""
 
 echo "### Installing Coder base apps (you can ignore any stat warnings)."
@@ -50,7 +42,6 @@ echo ""
 echo "### Installing node.js modules."
 su -s/bin/bash coder <<'EOF'
 cd /home/coder/coder-dist/coder-base
-cp ../raspbian-addons/home/coder/coder-dist/coder-base/package.json .
 npm install
 EOF
 echo ""

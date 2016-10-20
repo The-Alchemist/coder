@@ -1,10 +1,5 @@
 #!/bin/bash
 
-echo "### Add ssh to start up."
-insserv ssh
-update-rc.d ssh enable
-echo ""
-
 echo "### Install vim."
 apt-get -y install vim
 echo ""
@@ -47,7 +42,6 @@ cp -v ../../../raspbian-addons/etc/wpa_supplicant/wpa_supplicant* /etc/wpa_suppl
 chown -v root:wpaconfig /etc/wpa_supplicant/wpa_supplicant*
 chmod -v 660 /etc/wpa_supplicant/wpa_supplicant*
 
-cp -v ../../../raspbian-addons/etc/init.d/coder-daemon /etc/init.d/
 cp -v ../../../raspbian-addons/etc/init.d/generate-ssh-hostkeys /etc/init.d/
 cp -v ../../../raspbian-addons/etc/init.d/pull-coder-reset /etc/init.d/
 cp -v ../../../raspbian-addons/etc/init.d/pull-hostname /etc/init.d/
@@ -56,8 +50,6 @@ cp -v ../../../raspbian-addons/etc/init.d/pull-wpa-supplicant /etc/init.d/
 
 echo "### Add init scripts to start up routine."
 echo "Coder"
-insserv coder-daemon
-update-rc.d coder-daemon enable
 
 echo "Auto ssh key regen"
 insserv generate-ssh-hostkeys

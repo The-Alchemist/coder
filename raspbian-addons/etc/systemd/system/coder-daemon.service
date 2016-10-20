@@ -1,10 +1,9 @@
 [Unit]
 Description=Google Coder Daemon
 After=network.target auditd.service syslog.target
-AssertPathExists=/home/coder/coder-dist
 
 [Service]
-ExecStart=/usr/bin/node server.js 
+ExecStart=/usr/bin/nodejs server.js
 KillMode=process
 User=coder
 WorkingDirectory=/home/coder/coder-dist/coder-base/
@@ -13,7 +12,7 @@ StandardError=syslog
 SyslogIdentifier=coder-daemon
 Environment=NODE_ENV=production
 Restart=on-failure
-RestartSec=10                       # Restart service after 10 seconds if node service crashes
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
