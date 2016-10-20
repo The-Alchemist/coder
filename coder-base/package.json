@@ -15,6 +15,7 @@
     "express-params": "0.0.3",
     "mustache": "^2.2.1",
     "redis": "^2.6.2",
-    "socket.io": "^1.4.8"
+    "socket.io": "^1.4.8",
+    "wiring-pi": "~2.1.1"
   }
 }
