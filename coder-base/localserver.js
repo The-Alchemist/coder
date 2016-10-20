@@ -65,17 +65,7 @@ var apphandler = function( req, res, appdir ) {
     
 
     util.log( "GET: " + apppath + " " + appname );
-
-    //Redirect to sign-in for unauthenticated users
-    publicAllowed = ["auth"]; //apps that are exempt from any login (should only be auth)
-    auth = require(appdir + "auth" + "/app");
-    user = auth.isAuthenticated(req, res);
-    if ( !user && publicAllowed.indexOf( appname ) < 0) {
-	util.log("redirect: " + "http://" + getHost(req) + ":" + config.httpVisiblePort + '/app/auth');
-        res.redirect("http://" + getHost(req) + ":" + config.httpVisiblePort +  '/app/auth' ); 
-        return;
-    }
-
+    var auth = require(appdir + "auth" + "/app");
 
     if ( !apppath ) {
         apppath = "/";  
